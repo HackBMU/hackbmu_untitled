@@ -31,7 +31,7 @@
 
     </div>
     <button id="snap"> Snap</button>
-    <input id="label" type="number" value=0/>
+    <input id="label" type="number" />
     <script>
         const socket = io('http://10.7.2.96:3000');
 
@@ -136,9 +136,6 @@
                                     d: centroid_dist['cy'],
                                     e: centroid_dist['ma'],
                                     f: centroid_dist['ye'],
-                                    g: height['cy'],
-                                    h: height['ma'],
-                                    i: height['ye'],
                                     label: document.getElementById('label').value
                                 });
 

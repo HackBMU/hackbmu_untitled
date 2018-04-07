@@ -1,41 +1,3 @@
-// const apiai = require('apiai');
-
-// const app = apiai("e101099bd2ae4bf5a4fcc37458a2eb3d");
-
-// var request = app.textRequest('hi', {
-//     sessionId: '2'
-// });
-
-// request.on('response', function(response) {
-// 	var res = JSON.parse(JSON.stringify(response));
-//     console.log(res.result.fulfillment.speech);
-// 	const Translate = require('@google-cloud/translate');
-// 	const projectId = 'theta-office-199904';
-// 	const translate = new Translate({
-// 	  projectId: projectId,
-// 	});
-// 	const text = res.result.fulfillment.speech;
-// 	const target = 'hi';
-// 	translate
-// 	  .translate(text, target)
-// 	  .then(results => {
-// 	    const translation = results[0];
-// 	    console.log(`Text: ${text}`);
-// 	    console.log(`Translation: ${translation}`);
-// 	  })
-// 	  .catch(err => {
-// 	    console.error('ERROR:', err);
-// 	  });
-
-// });
-
-// request.on('error', function(error) {
-//     console.log(error);
-// });
-
-// request.end();
-
-
 var perceptron = require('perceptron');
 var express = require('express');
 var app = express();
@@ -44,6 +6,7 @@ var path = require('path');
 var io = require('socket.io')(server);
 var bodyParser = require('body-parser');
 var fs = require('fs');
+var exphbs = require('express-handlebars');
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
@@ -51,8 +14,10 @@ app.get('/', function(req, res) {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+app.set('views', path.join(__dirname, 'views'));
+app.engine('handlebars', exphbs({ defaultLayout: 'layout' }));
+app.set('view engine', 'handlebars');
 
-console.log(111111);
 var datas = [];
 var count = 0;
 
@@ -68,7 +33,6 @@ io.on('connection', function(socket) {
         console.log(data.d);
         console.log(data.e);
         console.log(data.f);
-        console.log(data.g);
         console.log(data.label);
         console.log('\n');
         datas.push(data);
@@ -83,25 +47,72 @@ io.on('connection', function(socket) {
     })
 });
 
-// app.get('/predict', function(req, res) {
 var and = perceptron();
 
 var train = require('./train.json');
 var trainData = JSON.parse(JSON.stringify(train));
 
 trainData.forEach(function(da) {
-    and.train([da.a, da.b, da.c, da.d, da.e, da.f, da.g], da.label);
+    and.train([da.a, da.b, da.c, da.d, da.e, da.f], da.label);
 });
 
-console.log(112121);
 var test = require('./test.json');
 var testData = JSON.parse(JSON.stringify(test));
 
 var str = '';
 
 testData.forEach(function(da) {
-    console.log(and.perceive([da.a, da.b, da.c, da.d, da.e, da.f, da.g]));
+    if (and.perceive([da.a, da.b, da.c, da.d, da.e, da.f]) == '0') {
+
+    }
 });
 
-// res.send(str);
-// });
+
+
+app.get('/chatbot', function(req, res) {
+    res.render('index');
+});
+
+app.post('/chatbot', function(req, resp) {
+    console.log(req.body.input);
+    const apiai = require('apiai');
+    const app = apiai("11c7a7fad3714ec28643becb17571427");
+
+    var request = app.textRequest(req.body.input, {
+        sessionId: '2'
+    });
+
+    request.on('response', function(response) {
+        var res = JSON.parse(JSON.stringify(response));
+        const Translate = require('@google-cloud/translate');
+        const projectId = 'theta-office-199904';
+        const translate = new Translate({
+            projectId: projectId,
+        });
+        const text = res.result.fulfillment.speech;
+        console.log(text);
+        const target = 'hi';
+        translate.translate(text, target).then(results => {
+            const translation = results[0];
+            console.log(`Text: ${text}`);
+            console.log(`Translation: ${translation}`);
+            var googleTTS = require('google-tts-api');
+            googleTTS(translation, 'hi', 1)
+                .then(function(url) {
+                    resp.send(url);
+                    console.log(url);
+                })
+                .catch(function(err) {
+                    console.error(err.stack);
+                });
+        }).catch(err => {
+            console.error('ERROR:', err);
+        });
+    });
+
+    request.on('error', function(error) {
+        console.log(error);
+    });
+
+    request.end();
+});
