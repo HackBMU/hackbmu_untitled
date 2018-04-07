@@ -1,3 +1,12 @@
 Sorry, what was that?
 Text: Sorry, what was that?
 Translation: क्षमा करें, वह क्या था?
+$.ajax({
+                                    type: 'POST',
+                                    url: "http://localhost:3000/data",
+                                    data: {
+                                        a: cy_dist,
+                                        b: my_dist,
+                                        c: cm_dist
+                                    }
+                                });

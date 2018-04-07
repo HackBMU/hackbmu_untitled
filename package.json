@@ -10,6 +10,10 @@
   "license": "ISC",
   "dependencies": {
     "@google-cloud/translate": "^1.1.0",
-    "apiai": "^4.0.3"
+    "apiai": "^4.0.3",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3",
+    "perceptron": "0.0.1",
+    "socket.io": "^2.1.0"
   }
 }
