@@ -8,7 +8,8 @@
     <script src="./build/tracking.js"></script>
     <script src="assets/stats.min.js"></script>
     <script src="assets/color_camera_gui.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
+    <script src="assets/jquery.js"></script>
+    <script src="assets/socket.js"></script>
     <style>
         video,
         canvas {
@@ -20,9 +21,10 @@
 </head>
 
 <body>
-    <center>
+    <!-- <center>
         <h3>Gesture Recognition</h3>
-    </center>
+    </center> -->
+
     <div class="demo-frame">
         <div class="demo-container">
             <video id="video" width="600" height="450" preload autoplay loop muted controls></video>
@@ -30,10 +32,12 @@
         </div>
 
     </div>
-    <button id="snap"> Snap</button>
+    <p>Training</p>
     <input id="label" type="number" />
+    <button id="snap"> Snap</button>
+    <button id="predict"> Prediction</button>
     <script>
-        const socket = io('http://10.7.2.96:3000');
+        const socket = io('http://localhost:3000');
 
         function findDistance(a_x, a_y, b_x, b_y) {
             return Math.sqrt((b_x - a_x) ** 2 + (b_y - b_x) ** 2);
@@ -98,10 +102,10 @@
                         }
 
                         centroid = [(temp_x) / 3, (temp_y) / 3];
-                        context.strokeStyle = "#000";
+                        context.strokeStyle = "#000 ";
                         context.strokeRect((rect.x + rect.width / 2), (rect.y + rect.height / 2), 2, 2);
                         context.font = '11px Helvetica';
-                        context.fillStyle = "#fff";
+                        context.fillStyle = "#fff ";
                         context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
                         context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
 
@@ -128,16 +132,23 @@
 
                         }
                         if (dt1 + dt2 + dt3 > total_distance_threshold) {
-                            height['cy'] =
-                                socket.emit('data', {
-                                    a: cy_dist,
-                                    b: my_dist,
-                                    c: cm_dist,
-                                    d: centroid_dist['cy'],
-                                    e: centroid_dist['ma'],
-                                    f: centroid_dist['ye'],
-                                    label: document.getElementById('label').value
-                                });
+
+
+                            document.getElementById('predict').addEventListener('mousedown', function() {
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: "http://10.7.2.96:3000/chatbot ",
+                                        data: {
+                                            a: cy_dist,
+                                            b: my_dist,
+                                            c: cm_dist,
+                                            d: centroid_dist['cy'],
+                                            e: centroid_dist['ma'],
+                                            f: centroid_dist['ye']
+                                        },
+                                        dataType: "text "
+                                            });
+                                        });
 
                         }
                     }

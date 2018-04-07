@@ -1,51 +1,173 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
+
 <head>
-	<title>HackBMU</title>
-	<link rel="stylesheet" href="/css/bootstrap.css" />
-	<link rel="stylesheet" href="/css/style.css" />
-  <script src="assets/jquery.js"></script>
-  
+    <meta charset="utf-8">
+    <title>Gesture Tracking</title>
+    <link rel="stylesheet" href="assets/demo.css">
+    <script src="./build/tracking.js"></script>
+    <script src="assets/stats.min.js"></script>
+    <script src="assets/color_camera_gui.js"></script>
+    <script src="assets/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
+    <style>
+        video,
+        canvas {
+            margin-left: 100px;
+            margin-top: 35px;
+            position: absolute;
+        }
+    </style>
 </head>
+
 <body>
-	<div class="container">
-      <div class="header clearfix">
-        <nav>
-          <ul class="nav nav-pills pull-right">
-              {{!-- <li role="presentation"><a href="/users/login">Login</a></li>
-              <li role="presentation"><a href="/users/register">Register</a></li>
-              <li role="presentation"><a href="/miners/register">Miner</a></li> --}}
-          </ul>
-        </nav>
-        <h3 class="text-muted">SIGN RECOGNITION</h3>
-      </div>
+    <!-- <center>
+        <h3>Gesture Recognition</h3>
+    </center> -->
 
-
-      <div class="row">
-        <div class="col-lg-12">
-          {{!-- {{#if success_msg}}
-            <div class="alert alert-success">{{success_msg}}</div>
-          {{/if}}
-
-          {{#if error_msg}}
-            <div class="alert alert-danger">{{error_msg}}</div>
-          {{/if}}
-
-          {{#if error}}
-            <div class="alert alert-danger">{{error}}</div>
-          {{/if}} --}}
-          
-          {{{body}}}
+    <div class="demo-frame">
+        <div class="demo-container">
+            <video id="video" width="600" height="450" preload autoplay loop muted controls></video>
+            <canvas id="canvas" width="600" height="450"></canvas>
         </div>
 
-        
-      </div>
-
-      <footer class="footer">
-        <p>&copy; 2018 HackBMU, Inc.</p>
-      </footer>
-      <script src="js/custom.js"></script>
-
     </div>
+    <p>Training</p>
+    <input id="label" type="number" />
+    <button id="snap"> Snap</button>
+    <button id="predict"> Prediction</button>
+    <script>
+        const socket = io('http://10.7.2.96:3000');
+
+        function findDistance(a_x, a_y, b_x, b_y) {
+            return Math.sqrt((b_x - a_x) ** 2 + (b_y - b_x) ** 2);
+        }
+
+        document.getElementById('snap').addEventListener('mousedown', function() {
+            socket.emit('snap');
+        });
+
+        window.onload = function() {
+            var video = document.getElementById('video');
+            var canvas = document.getElementById('canvas');
+            var context = canvas.getContext('2d');
+            var tracker = new tracking.ColorTracker(['yellow', 'magenta', 'cyan']);
+            tracking.track('#video', tracker, {
+                camera: true
+            });
+
+            var distance_threshold = 0;
+            var total_distance_threshold = 35;
+            var centroid = [0, 0];
+
+            spatial_dict = {
+                'yellow': [0, 0],
+                'magenta': [0, 0],
+                'cyan': [0, 0]
+            };
+            dist_dict = {
+                'cy': 0,
+                'my': 0,
+                'cm': 0
+            };
+            centroid_dist = {
+                'cy': 0,
+                'ma': 0,
+                'ye': 0,
+            };
+            height = {
+                'cy': 0,
+                'ma': 0,
+                'ye': 0,
+            };
+
+            tracker.on('track', function(event) {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+
+                event.data.forEach(function(rect) {
+                    if (event.data.length == 3) {
+                        if (rect.color === 'custom') {
+                            rect.color = tracker.customColor;
+                        }
+                        var x = (rect.x + rect.width / 2);
+                        var y = (rect.y + rect.height / 2);
+                        spatial_dict[rect.color] = [x, y];
+                        var temp_x = 0;
+                        var temp_y = 0;
+                        for (var key in spatial_dict) {
+                            if (spatial_dict.hasOwnProperty(key)) {
+                                temp_x += spatial_dict[key][0];
+                                temp_y += spatial_dict[key][1];
+                            }
+                        }
+
+                        centroid = [(temp_x) / 3, (temp_y) / 3];
+                        context.strokeStyle = "#000 ";
+                        context.strokeRect((rect.x + rect.width / 2), (rect.y + rect.height / 2), 2, 2);
+                        context.font = '11px Helvetica';
+                        context.fillStyle = "#fff ";
+                        context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
+                        context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
+
+                        var cy_dist = findDistance(spatial_dict['cyan'][0], spatial_dict['cyan'][1], spatial_dict['yellow'][0], spatial_dict['yellow'][1]);
+                        var my_dist = findDistance(spatial_dict['magenta'][0], spatial_dict['magenta'][1], spatial_dict['yellow'][0], spatial_dict['yellow'][1]);
+                        var cm_dist = findDistance(spatial_dict['cyan'][0], spatial_dict['cyan'][1], spatial_dict['magenta'][0], spatial_dict['magenta'][1]);
+                        var dt1 = Math.abs(dist_dict['cy'] - cy_dist);
+                        var dt2 = Math.abs(dist_dict['my'] - my_dist);
+                        var dt3 = Math.abs(dist_dict['cm'] - cm_dist);
+                        if (dt1 > distance_threshold) {
+                            dist_dict['cy'] = cy_dist;
+                            centroid_dist['ye'] = findDistance(centroid[0], centroid[1], spatial_dict['yellow'][0], spatial_dict['yellow'][1]);
+                            centroid_dist['cy'] = findDistance(centroid[0], centroid[1], spatial_dict['cyan'][0], spatial_dict['cyan'][1]);
+                        }
+                        if (dt2 > distance_threshold) {
+                            dist_dict['my'] = my_dist;
+                            centroid_dist['ye'] = findDistance(centroid[0], centroid[1], spatial_dict['yellow'][0], spatial_dict['yellow'][1]);
+                            centroid_dist['ma'] = findDistance(centroid[0], centroid[1], spatial_dict['magenta'][0], spatial_dict['magenta'][1]);
+                        }
+                        if (dt3 > distance_threshold) {
+                            dist_dict['cm'] = cm_dist;
+                            centroid_dist['ma'] = findDistance(centroid[0], centroid[1], spatial_dict['magenta'][0], spatial_dict['magenta'][1]);
+                            centroid_dist['cy'] = findDistance(centroid[0], centroid[1], spatial_dict['cyan'][0], spatial_dict['cyan'][1]);
+
+                        }
+                        if (dt1 + dt2 + dt3 > total_distance_threshold) {
+
+                            document.getElementById('predict').addEventListener('mousedown', function() {
+                                $.ajax({
+                                    type: 'POST',
+                                    url: "http://localhost:3000/chatbot ",
+                                    data: {
+                                        a: cy_dist,
+                                        b: my_dist,
+                                        c: cm_dist,
+                                        d: centroid_dist['cy'],
+                                        e: centroid_dist['ma'],
+                                        f: centroid_dist['ye']
+                                    },
+                                    dataType: "text ",
+                                    success: function(resultData) {}
+                                });
+                            });
+
+                            socket.emit('data', {
+                                a: cy_dist,
+                                b: my_dist,
+                                c: cm_dist,
+                                d: centroid_dist['cy'],
+                                e: centroid_dist['ma'],
+                                f: centroid_dist['ye'],
+                                label: document.getElementById('label').value
+                            });
+
+                        }
+                    }
+                });
+            });
+
+            initGUIControllers(tracker);
+        };
+    </script>
 </body>
+
 </html>
