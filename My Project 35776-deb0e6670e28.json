@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "theta-office-199904",
+  "private_key_id": "deb0e6670e289b7343f736e40f85c0cd705feeed",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEuwIBADANBgkqhkiG9w0BAQEFAASCBKUwggShAgEAAoIBAQCTIYBU0wdXLyT5\n4dA4YmFS++YXehoj+izzi3Udh1SRLPBKzPGD5IGJTFUQxJj3CCpIq/ASvMB1SBx7\nzYdFkEDvnLLcXnM4uaTkDBDfG6c1MfmvBFPS4Ax0ZoTK0jBTJCc0NrsGyTsbhcc6\nFSmZw+JhILFxC4qYIyIG6uf5uMpkaDkyr+q1/Ve24Tqfl8q/BV+hsupQIaaUw2C9\nXBFN3iprulR4Hrek8kDBBKSz9e1WBr+NyPjDpw0r7e3S2UP9veJA6Ldz8NQ0Kf9R\n3PolEg3LPB53bo8z76qFk878hNwI64vDNloUdttliPMbHUKC99vJC3h5/yuiM85W\nrWplMb7BAgMBAAECgf9Kb3SBdZINJajLUtcI75zVYuNxlTCMaxE61Z8WpVS/bcDT\n1wOI+p4eXCPdK9lHgTYDNhlrIVss+qKOb9iz9NslXl2O56nbVPB6/y+58D+TxgjP\n5pyR3w/uA7/C7LvOFEhRPi84q63fqrq0Q+icBmINSYD79B7WAVBBt65MxJSAXwWT\nnlc5CfdB39vzta1/j2ej7rwmaqItz9ZtDkwC6tf6b4Cb8Djvwaz+WSoGwqXIbJtF\nAxzIr6XKz/6PpvNdJvxkWNA8cAv5wu12AKe3i9PDfBOLHnSXKZ/A21uNoaoG24Ty\nE8MC1ZRUGkoPH/aBTaNLeMYRlB6AgC5YXRNZQYECgYEAy+17TV+PI0+mSdtmdSFA\nqsr63OCFjfc1Qsoe6pad2uLnfd1zC0maP/efA2Pi+HiT6Wncw/HXliHdjNTTSVeA\nd4W+9drcYXAvFtt3iPNKHEATAxzbBV4oX3HSz6Q70/D9RfR8UdD+racTe00kN/PX\noRAP6WTWc77fzOTBrQ2Bj4ECgYEAuLNHH4z2hpZto2926E6ixU4hViD08hlqoQwQ\ndBJWfn/m66QFqdMP4eb3rdo23unYeqYFFdAzeulnzT6XPE8BJlPYhqk67Uzt+Tm5\nIBc5WyRwy/zD582zWbJ5psq7rUI69b46oEl02YJuMYgonxJp+fsDRKIhBwoo7lLL\nQGXDz0ECgYEAw9pbF551PHacwEZFCq1bDC1R7Zx86DHKJ1EzjB4HkVdm+M0cVnTj\n/hd10q22KOi1NfGEI3Q7l2cC/uTP35p4OVJsanc+PR6fOxagoRj3zlYDbHPkLi2W\nHMSWsPGMvCqxNORwGavdTS4vWbZm2I4KRBfHEGLWS+e/zWrOT8Ou8QECgYAz2bBX\nvRzf/47b2MjKwniTZzGYmjvpUxVKDLb5vsQlUwailDM6z5Of2VUiqyXIQmGRXNYE\nn6Q0Fx4a0j1mos8x0Uvx0cRHJdeQpZHA3oQtf/dibJ0aj/aPcbkRB8zUAMnIfxS6\nNqTlAuaoZQ7ySRsTIFJ0jAc1kLaY4QlKFMd5gQKBgDsEN2+4lFA5pgKA4yoFQ9dP\nWCKbLj8mkcxLG9TxgS/75bDVSGiJz/jFJShNwALc6wcTDjqWtvYDhfwtcQe/NlwA\nJqwqxQx8RlP6pBu8kcii8r2Rocb+l8AhQQw7eaW4xMMlQlOHf4bXuIRXAKRsrDQ8\ntwYT+0qjxJ6+2lmu+w7f\n-----END PRIVATE KEY-----\n",
+  "client_email": "translator@theta-office-199904.iam.gserviceaccount.com",
+  "client_id": "102545994049537530076",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/translator%40theta-office-199904.iam.gserviceaccount.com"
+}
